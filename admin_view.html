@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Student Results</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0b1a2e;
+            color: #eef4ff;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            background: #1e2a3a;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ffaa44;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f1a24;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #2d4a6e;
+        }
+        th {
+            background: #ffaa44;
+            color: #1a2a3a;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #2a3f54;
+        }
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #ccc;
+        }
+        .refresh-btn {
+            background: #ffaa44;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #8ba3c7;
+        }
+        .score-high {
+            color: #a3e635;
+            font-weight: bold;
+        }
+        .delete-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        .admin-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><i class="fas fa-database"></i> Admin Panel: Student Quiz Results</h1>
+    <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+    <div id="resultsTable">
+        <div class="no-data">Loading data from server...</div>
+    </div>
+    <div class="footer">
+        All saved student records are stored in <code>results.json</code> on the server.
+    </div>
+</div>
+
+<script>
+    async function loadData() {
+        const tableDiv = document.getElementById('resultsTable');
+        tableDiv.innerHTML = '<div class="no-data">Loading...</div>';
+        try {
+            const response = await fetch('results.json?t=' + new Date().getTime());
+            if (!response.ok) {
+                if (response.status === 404) {
+                    tableDiv.innerHTML = '<div class="no-data">📂 No data file found. Students need to take the quiz first.</div>';
+                } else {
+                    tableDiv.innerHTML = '<div class="no-data">❌ Failed to load data. Server error.</div>';
+                }
+                return;
+            }
+            const data = await response.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                tableDiv.innerHTML = '<div class="no-data">📭 No student records yet.</div>';
+                return;
+            }
+            // Build table
+            let html = `<table>
+                            <thead>
+                                <tr><th>Name</th><th>ID</th><th>Score</th><th>Total</th><th>Percentage</th><th>Timestamp</th></tr>
+                            </thead>
+                            <tbody>`;
+            // عرض من الأحدث إلى الأقدم
+            data.slice().reverse().forEach(record => {
+                const percentage = record.percentage !== undefined ? record.percentage : ((record.score / record.total) * 100).toFixed(2);
+                html += `<tr>
+                            <td>${escapeHtml(record.name)}</td>
+                            <td>${escapeHtml(record.id)}</td>
+                            <td>${record.score}</td>
+                            <td>${record.total}</td>
+                            <td class="${percentage >= 70 ? 'score-high' : ''}">${percentage}%</td>
+                            <td>${escapeHtml(record.timestamp)}</td>
+                         </tr>`;
+            });
+            html += `</tbody></table>`;
+            tableDiv.innerHTML = html;
+        } catch (err) {
+            console.error(err);
+            tableDiv.innerHTML = '<div class="no-data">⚠️ Error loading data. Check console.</div>';
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    loadData();
+</script>
+</body>
+</html>

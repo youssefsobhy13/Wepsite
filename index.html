@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Programming | Sphinx University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #0b1a2e, #0c1a2f); color: #eef4ff; padding: 2rem 1.5rem; }
+        .container { max-width: 1200px; margin: auto; background: rgba(18,28,40,0.7); backdrop-filter: blur(4px); border-radius: 2rem; padding: 2rem; border: 1px solid #2d4a6e; }
+        
+        /* Profile Section - باقي كما هو */
+        .profile-section { display: flex; align-items: center; justify-content: center; gap: 1.5rem; background: rgba(0,0,0,0.3); border-radius: 80px; padding: 0.8rem 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; backdrop-filter: blur(2px); }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ffaa44; background: #1e2f3e; }
+        .profile-info h2 { font-size: 1.6rem; background: linear-gradient(135deg, #ffaa44, #ffdd99); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        /* University Section - شعار مربع وأكبر */
+        .uni-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: #0f1a24;
+            border-radius: 24px;
+            padding: 0.8rem 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            border-top: 4px solid #ffaa44;
+            border-bottom: 1px solid #2d4a6e;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+        }
+        .uni-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;      /* مربع بزوايا خفيفة */
+            object-fit: cover;
+            background: #1e2f3e;
+            border: 3px solid #ffaa44;
+            box-shadow: 0 0 12px rgba(255,170,68,0.6);
+        }
+        .uni-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #ffdd99);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .uni-name i { font-size: 1.5rem; color: #ffaa44; background: none; -webkit-background-clip: unset; }
+        
+        /* باقي الأنماط كما هي (لم تتغير) */
+        .main-header { text-align: center; margin-bottom: 1rem; }
+        .main-header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mode-buttons { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .mode-btn { background: #1e2f3e; border: none; padding: 0.8rem 2rem; border-radius: 60px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .mode-btn.active { background: #ffaa44; color: #1a2a3a; }
+        .content-panel { display: none; animation: fade 0.3s; }
+        .content-panel.active-panel { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        
+        .problem-item, .quiz-item { background: #1e2a3a; padding: 1rem 1.5rem; border-radius: 1.2rem; cursor: pointer; margin-bottom: 1rem; border-left: 4px solid #ffaa44; display: flex; justify-content: space-between; transition: 0.2s; }
+        .problem-item:hover, .quiz-item:hover { background: #2a3f54; transform: translateX(5px); }
+        
+        .code-area { position: relative; background: #0a0f18; border-radius: 1.2rem; margin-top: 1.2rem; overflow: hidden; border: 1px solid #2d4a6e; }
+        .code-header { display: flex; justify-content: flex-end; gap: 12px; background: #141e2a; padding: 0.6rem 1rem; border-bottom: 1px solid #2d4a6e; }
+        .copy-btn, .download-btn { background: #2c3e50; border: none; color: white; padding: 0.3rem 1rem; border-radius: 30px; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-weight: 500; }
+        .copy-btn:hover, .download-btn:hover { background: #ffaa44; color: #1a2a3a; }
+        .code-area pre { margin: 0; padding: 1rem; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.5; }
+        
+        .quiz-question { background: #1e2a3a; margin-bottom: 1.2rem; padding: 1.2rem; border-radius: 1.2rem; border: 1px solid #2d4a6e; }
+        .quiz-question p { font-weight: 600; margin-bottom: 0.8rem; font-size: 1rem; }
+        .quiz-options { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+        .quiz-options label { background: #0b1722; padding: 0.5rem 1.2rem; border-radius: 40px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .quiz-options label:hover { background: #ffaa44; color: #1a2a3a; }
+        input[type="radio"] { margin-right: 6px; accent-color: #ffaa44; }
+        .btn { background: #ffaa44; border: none; padding: 0.6rem 1.5rem; border-radius: 2rem; font-weight: bold; cursor: pointer; color: #1a2a3a; transition: 0.2s; }
+        .btn:hover { transform: translateY(-2px); background: #ffcc77; }
+        .result-area { background: #0e1a28; border-radius: 1rem; padding: 1rem; margin-top: 1.5rem; border-right: 3px solid #ffaa44; }
+        .footer-credit { margin-top: 2.5rem; text-align: center; background: #07121e80; border-radius: 2rem; padding: 1.2rem; }
+        .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .social-link-item { display: inline-flex; align-items: center; gap: 8px; background: #1e2f3e; padding: 0.4rem 1rem; border-radius: 40px; transition: 0.2s; text-decoration: none; color: white; }
+        .social-link-item:hover { background: #ffaa44; color: #0b1a2e; transform: translateY(-2px); }
+        .round-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ffaa44; background: #1e2f3e; }
+        .student-form { background: #0c1722; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #ffaa44; }
+        .student-form input { background: #1e2a3a; border: none; padding: 0.6rem 1rem; border-radius: 2rem; color: white; width: 200px; margin: 0.5rem; }
+        .error-msg { color: #f87171; font-size: 0.8rem; }
+        @media (max-width: 700px) { .profile-section, .uni-header { flex-direction: column; } .uni-logo { width: 80px; height: 80px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <img src="profile.jpg" alt="Profile Image" class="profile-img">
+        <div class="profile-info">
+            <h2>ENG / YOUSSEF SOBHY</h2>
+            <p><i class="fas fa-crown"></i> Developed by YOUSSEF SOBHY | Structural Programming Hub</p>
+        </div>
+    </div>
+
+    <!-- University Section with Square Larger Logo -->
+    <div class="uni-header">
+        <img src="sphinx.png" alt="Sphinx University Logo" class="uni-logo" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23333%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%23aaa%22%3ESphinx%3C%2Ftext%3E%3C%2Fsvg%3E';">
+        <div class="uni-name"><i class="fas fa-landmark"></i> Sphinx University</div>
+    </div>
+
+    <div class="main-header"><h1><i class="fas fa-microchip"></i> Structural Programming Hub</h1><p>Codes + Quiz with student data saving</p></div>
+    <div class="mode-buttons">
+        <button id="codesModeBtn" class="mode-btn active"><i class="fas fa-code"></i> Codes</button>
+        <button id="quizzesModeBtn" class="mode-btn"><i class="fas fa-question-circle"></i> Quizzes</button>
+    </div>
+    <div id="codesPanel" class="content-panel active-panel">
+        <div id="problemsList"></div>
+        <div id="codeDisplayArea" style="display: none;">
+            <button id="backToProblemsBtn" class="btn" style="background:#2c3e50; color:white;">← Back to problems</button>
+            <div id="codeContent"></div>
+        </div>
+    </div>
+    <div id="quizzesPanel" class="content-panel">
+        <div id="quizzesList"></div>
+        <div id="quizDisplayArea" style="display: none;">
+            <button id="backToQuizzesBtn" class="btn" style="background:#2c3e50; color:white;">← Back to quizzes</button>
+            <div id="quizContent"></div>
+        </div>
+    </div>
+    <div class="footer-credit">
+        <div class="social-links">
+            <a href="https://wa.me/201066781530" target="_blank" class="social-link-item"><img src="img1.jpg" class="round-img"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="https://t.me/YOU1_SSEF" target="_blank" class="social-link-item"><img src="img1.jpg" class="round-img"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://www.youtube.com/@YOUSSEFSOBHY1" target="_blank" class="social-link-item"><i class="fab fa-youtube"></i> YouTube</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Original code stored exactly as is
+    const problemsListData = [{
+        title: "Length Converter (Feet/Inches to Centimeters)",
+        description: "Convert feet & inches to total inches and then to centimeters.",
+        code: `#include <iostream>
+using namespace std;
+
+int main(void){
+    double totall;
+    double centemeters;
+    double inches;
+    double feet;
+
+    cout << "Enter Feet : "; cin >> feet;
+    cout << "Enter inches : " ;cin >> inches;
+    totall = 12 * inches + feet;
+    centemeters = totall * 2.54;
+    cout << "Total inches : " << totall << endl;
+    cout << "Centimeters : " << centemeters << endl;
+}
+// YOUSSEF SOBHY`
+    }];
+
+    const quizData = [
+        { text: "A computer is:", options: ["An electronic device that performs arithmetic and logical operations", "A storage device only", "A programming language", "A network system"], correct: 0 },
+        { text: "A computer system consists of:", options: ["CPU only", "Hardware and software", "Memory only", "Programs only"], correct: 1 },
+        { text: "The CPU is an example of:", options: ["Hardware", "Software", "Data", "Algorithm"], correct: 0 },
+        { text: "Main memory is:", options: ["Permanent storage", "Temporary storage", "External device", "Software"], correct: 1 },
+        { text: "Secondary storage is used for:", options: ["Temporary storage", "Permanent storage", "Processing data", "Input only"], correct: 1 },
+        { text: "Which is an input device?", options: ["Keyboard", "Printer", "Monitor", "Speaker"], correct: 0 },
+        { text: "Which is an output device?", options: ["Mouse", "Monitor", "Keyboard", "Scanner"], correct: 1 },
+        { text: "Software is:", options: ["Physical parts of computer", "Programs run by the computer", "Storage devices", "Input devices"], correct: 1 },
+        { text: "Machine language consists of:", options: ["0s and 1s", "English words", "Symbols only", "Diagrams"], correct: 0 },
+        { text: "A bit is:", options: ["A binary digit", "8 bits", "A byte", "A program"], correct: 0 },
+        { text: "A byte equals:", options: ["2 bits", "4 bits", "8 bits", "16 bits"], correct: 2 }
+    ];
+
+    const SAVE_ENDPOINT = "save_data.php";
+    let currentStudent = { name: "", id: "" };
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+    }
+
+    async function copyFullCode(code) {
+        try {
+            await navigator.clipboard.writeText(code);
+            return true;
+        } catch(err) {
+            console.error("Copy failed", err);
+            return false;
+        }
+    }
+
+    function downloadCode(code, filename) {
+        const blob = new Blob([code], {type: "text/plain"});
+        const a = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = filename.endsWith(".cpp") ? filename : filename + ".cpp";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function showCodeForProblem(index) {
+        const prob = problemsListData[index];
+        const safeTitle = prob.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const filename = `${safeTitle}.cpp`;
+        const codeHtml = `
+            <h3>${escapeHtml(prob.title)}</h3>
+            <p>${escapeHtml(prob.description)}</p>
+            <div class="code-area">
+                <div class="code-header">
+                    <button class="copy-btn" data-code-index="${index}"><i class="fas fa-copy"></i> Copy Code</button>
+                    <button class="download-btn" data-code-index="${index}" data-filename="${filename}"><i class="fas fa-download"></i> Download as File</button>
+                </div>
+                <pre><code class="language-cpp">${escapeHtml(prob.code)}</code></pre>
+            </div>
+        `;
+        document.getElementById('codeContent').innerHTML = codeHtml;
+        document.getElementById('problemsList').style.display = 'none';
+        document.getElementById('codeDisplayArea').style.display = 'block';
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        
+        const copyBtn = document.querySelector('.copy-btn');
+        const downloadBtn = document.querySelector('.download-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', async () => {
+                const originalCode = problemsListData[index].code;
+                const success = await copyFullCode(originalCode);
+                if (success) {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> ✅ Copied!';
+                    setTimeout(() => copyBtn.innerHTML = originalText, 1500);
+                } else {
+                    alert("Could not copy, please select manually.");
+                }
+            });
+        }
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                const originalCode = problemsListData[index].code;
+                const fn = downloadBtn.getAttribute('data-filename');
+                downloadCode(originalCode, fn);
+                const originalText = downloadBtn.innerHTML;
+                downloadBtn.innerHTML = '<i class="fas fa-check"></i> ✅ Downloaded!';
+                setTimeout(() => downloadBtn.innerHTML = originalText, 1500);
+            });
+        }
+    }
+
+    function renderProblemsList() {
+        const container = document.getElementById('problemsList');
+        container.innerHTML = problemsListData.map((p, idx) => `<div class="problem-item" data-idx="${idx}"><span><i class="fas fa-file-code"></i> ${escapeHtml(p.title)}</span><i class="fas fa-chevron-left"></i></div>`).join('');
+        document.querySelectorAll('.problem-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const idx = parseInt(el.getAttribute('data-idx'));
+                showCodeForProblem(idx);
+            });
+        });
+    }
+
+    function showProblemsList() {
+        document.getElementById('problemsList').style.display = 'block';
+        document.getElementById('codeDisplayArea').style.display = 'none';
+    }
+
+    // Quiz functions
+    function requestStudentInfo(callback) {
+        const formHtml = `<div class="student-form"><h3><i class="fas fa-user-graduate"></i> Enter your details before starting the quiz</h3><input type="text" id="studentName" placeholder="Your Full Name"><input type="text" id="studentId" placeholder="Your ID (e.g., 2024001)"><button id="confirmStudentBtn" class="btn">Start Quiz</button><div id="formError" class="error-msg"></div></div>`;
+        document.getElementById('quizContent').innerHTML = formHtml;
+        document.getElementById('confirmStudentBtn').addEventListener('click', () => {
+            const name = document.getElementById('studentName').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            if (!name || !id) { document.getElementById('formError').innerText = "Both required."; return; }
+            currentStudent = { name, id };
+            callback();
+        });
+    }
+
+    function showQuizOne() {
+        let quizHtml = `<h3><i class="fas fa-brain"></i> Quiz 1: Computer Basics</h3><p><strong>Student:</strong> ${escapeHtml(currentStudent.name)} (ID: ${escapeHtml(currentStudent.id)})</p>`;
+        quizData.forEach((q, idx) => {
+            quizHtml += `<div class="quiz-question"><p><strong>${idx+1}. ${escapeHtml(q.text)}</strong></p><div class="quiz-options">`;
+            q.options.forEach((opt, optIdx) => { quizHtml += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${escapeHtml(opt)}</label>`; });
+            quizHtml += `</div></div>`;
+        });
+        quizHtml += `<div class="quiz-actions"><button id="submitQuizBtn" class="btn">Submit Answers & Save</button><button id="resetQuizBtn" class="btn">Reset</button></div><div id="quizResultArea" class="result-area" style="display: none;"></div>`;
+        document.getElementById('quizContent').innerHTML = quizHtml;
+        document.getElementById('submitQuizBtn').addEventListener('click', () => handleQuizSubmission());
+        document.getElementById('resetQuizBtn').addEventListener('click', () => { document.querySelectorAll('.quiz-question input[type="radio"]').forEach(r => r.checked = false); document.getElementById('quizResultArea').style.display = 'none'; });
+    }
+
+    async function handleQuizSubmission() {
+        const selected = []; for (let i=0; i<quizData.length; i++) { const r = document.querySelector(`input[name="q${i}"]:checked`); selected.push(r ? parseInt(r.value) : -1); }
+        let score = 0; let resultHtml = `<h4>Your Results:</h4>`;
+        for (let i=0; i<quizData.length; i++) { const isCorrect = (selected[i] === quizData[i].correct); if(isCorrect) score++; const userAns = (selected[i] !== -1) ? quizData[i].options[selected[i]] : "No answer"; const correctAns = quizData[i].options[quizData[i].correct]; resultHtml += `<div><strong>${i+1}. ${escapeHtml(quizData[i].text)}</strong><br>Your: ${escapeHtml(userAns)} ${isCorrect ? '✅' : '❌'}<br><span style="color:#a3e635;">Correct: ${escapeHtml(correctAns)}</span></div>`; }
+        resultHtml += `<div style="background:#1e3a5f; padding:0.8rem; border-radius:1rem;">Score: ${score} / ${quizData.length} (${Math.round(score/quizData.length*100)}%)</div>`;
+        const resultDiv = document.getElementById('quizResultArea'); resultDiv.innerHTML = resultHtml; resultDiv.style.display = 'block';
+        await saveStudentData(currentStudent.name, currentStudent.id, score, quizData.length);
+    }
+
+    async function saveStudentData(name, id, score, total) {
+        const payload = { name, id, score, total, timestamp: new Date().toISOString() };
+        try { await fetch(SAVE_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch(e) { console.error(e); }
+    }
+
+    function renderQuizzesList() {
+        const container = document.getElementById('quizzesList');
+        container.innerHTML = `<div class="quiz-item" data-quiz="1"><span><i class="fas fa-puzzle-piece"></i> Quiz 1: Computer Basics (11 questions)</span><i class="fas fa-chevron-left"></i></div>`;
+        document.querySelector('.quiz-item')?.addEventListener('click', () => { document.getElementById('quizzesList').style.display = 'none'; document.getElementById('quizDisplayArea').style.display = 'block'; requestStudentInfo(() => showQuizOne()); });
+    }
+
+    function showQuizzesList() { document.getElementById('quizzesList').style.display = 'block'; document.getElementById('quizDisplayArea').style.display = 'none'; }
+
+    function setActiveMode(mode) {
+        if(mode === 'codes') { document.getElementById('codesPanel').classList.add('active-panel'); document.getElementById('quizzesPanel').classList.remove('active-panel'); document.getElementById('codesModeBtn').classList.add('active'); document.getElementById('quizzesModeBtn').classList.remove('active'); showProblemsList(); }
+        else { document.getElementById('quizzesPanel').classList.add('active-panel'); document.getElementById('codesPanel').classList.remove('active-panel'); document.getElementById('quizzesModeBtn').classList.add('active'); document.getElementById('codesModeBtn').classList.remove('active'); showQuizzesList(); }
+    }
+
+    document.getElementById('backToProblemsBtn').addEventListener('click', showProblemsList);
+    document.getElementById('backToQuizzesBtn').addEventListener('click', showQuizzesList);
+    document.getElementById('codesModeBtn').addEventListener('click', () => setActiveMode('codes'));
+    document.getElementById('quizzesModeBtn').addEventListener('click', () => setActiveMode('quizzes'));
+    renderProblemsList();
+    renderQuizzesList();
+    setActiveMode('codes');
+</script>
+</body>
+</html>
